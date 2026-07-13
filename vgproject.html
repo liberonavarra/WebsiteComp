@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Videogame Project - Blabla</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark">
+  <header>
+    <nav>
+      <a href="index.html">home</a>
+      <a href="foto.html">foto</a>
+      <a href="video.html">video</a>
+    </nav>
+  </header>
+
+  <a href="other.html" class="back-btn">&#9664;</a>
+
+  <main style="flex-direction: column; align-items: center;">
+    <div class="vg-slider-container">
+      <div class="vg-slider">
+        <video src="vgproject/mockup1.mp4" loop muted autoplay></video>
+        <video src="vgproject/mockup2.mp4" loop muted autoplay></video>
+        <video src="vgproject/mockup3.mp4" loop muted autoplay></video>
+        <video src="vgproject/portrait.mp4" loop muted autoplay></video>
+
+        <button class="prev">&#9664;</button>
+        <button class="next">&#9654;</button>
+      </div>
+      <button class="audio-btn">[SOUND ON]</button>
+    </div>
+  </main>
+
+  <footer>
+    <p>email@email.email.com<br>instagram: Blabla</p>
+  </footer>
+
+  <script>
+    const slides = document.querySelectorAll('.vg-slider video');
+    const prevBtn = document.querySelector('.prev');
+    const nextBtn = document.querySelector('.next');
+    const audioBtn = document.querySelector('.audio-btn');
+    let current = 0;
+    let isMuted = true; // stato audio globale, persiste tra le slide
+
+    function showSlide(index) {
+      slides.forEach((video, i) => {
+        video.classList.toggle('active', i === index);
+        if (i === index) {
+          video.muted = isMuted; // applica lo stato audio corrente
+          video.play();
+        } else {
+          video.pause();
+        }
+      });
+    }
+
+    prevBtn.addEventListener('click', () => {
+      current = (current - 1 + slides.length) % slides.length;
+      showSlide(current);
+    });
+
+    nextBtn.addEventListener('click', () => {
+      current = (current + 1) % slides.length;
+      showSlide(current);
+    });
+
+    // Il bottone mostra sempre l'AZIONE del prossimo click:
+    // [MUTE] visibile  = audio attivo  (premi per silenziare)
+    // [SOUND ON] visibile = audio muto (premi per attivare)
+    function updateAudioBtn() {
+      audioBtn.textContent = isMuted ? '[SOUND ON]' : '[MUTE]';
+    }
+
+    audioBtn.addEventListener('click', () => {
+      isMuted = !isMuted;
+      slides[current].muted = isMuted;
+      updateAudioBtn();
+    });
+
+    showSlide(0);
+    updateAudioBtn();
+  </script>
+</body>
+</html>

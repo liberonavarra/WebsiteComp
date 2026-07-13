@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Blabla</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="index.html">home</a>
+      <a href="video.html">video</a>
+      <a href="other.html">other</a>
+    </nav>
+    <div class="back-button-wrap">
+      <a href="foto.html" class="back-button">←</a>
+    </div>
+  </header>
+
+  <h2 class="archive-title" id="titolo"></h2>
+  <div class="scroll-page" id="colonna"></div>
+
+  <footer>
+    <p>email@email.email.com<br>instagram: Blabla</p>
+  </footer>
+
+  <script src="photos.js"></script>
+  <script>
+    // Legge quale collezione mostrare dall'indirizzo (?c=...)
+    const params = new URLSearchParams(window.location.search);
+    const coll = ARCHIVIO.find(c => c.id === params.get('c')) || ARCHIVIO[0];
+
+    document.title = coll.titolo + ' - Blabla';
+    document.getElementById('titolo').textContent = coll.titolo;
+
+    // Impila le foto in colonna, a proporzioni naturali
+    const colonna = document.getElementById('colonna');
+    coll.foto.forEach((src, i) => {
+      const img = document.createElement('img');
+      img.src = src;
+      img.loading = 'lazy';
+      img.alt = coll.titolo + ' — ' + (i + 1);
+      colonna.appendChild(img);
+    });
+  </script>
+</body>
+</html>

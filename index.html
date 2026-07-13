@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Blabla</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="foto.html">foto</a>
+      <a href="video.html">video</a>
+      <a href="other.html">other</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="home-slideshow">
+      <img id="slideshow" src="" alt="">
+    </div>
+  </main>
+
+  <footer>
+    <p><a href="about.html">About / Contacts</a></p>
+  </footer>
+
+  <script src="photos.js"></script>
+  <script>
+    // Slideshow automatico: pesca da TUTTO l'archivio (photos.js),
+    // in ordine casuale diverso a ogni caricamento della pagina.
+    const tutte = [...new Set(ARCHIVIO.flatMap(c => c.foto))];
+
+    // mescola (Fisher-Yates)
+    for (let i = tutte.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [tutte[i], tutte[j]] = [tutte[j], tutte[i]];
+    }
+
+    const img = document.getElementById('slideshow');
+    let indice = 0;
+    img.src = tutte[0];
+
+    // precarica la prossima per evitare "flash" bianchi
+    function precarica(n) {
+      const p = new Image();
+      p.src = tutte[n % tutte.length];
+    }
+    precarica(1);
+
+    setInterval(() => {
+      indice = (indice + 1) % tutte.length;
+      // la nuova foto viene mostrata solo quando è completamente
+      // pronta: mai immagini che compaiono a metà
+      const nuova = new Image();
+      nuova.src = tutte[indice];
+      nuova.decode()
+        .then(() => { img.src = nuova.src; })
+        .catch(() => { img.src = nuova.src; });
+      precarica(indice + 1);
+    }, 8000); // cambia foto ogni 8 secondi
+  </script>
+</body>
+</html>

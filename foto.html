@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Foto - Blabla</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="index.html">home</a>
+      <a href="video.html">video</a>
+      <a href="other.html">other</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="projects-container">
+      <div class="projects-list">
+        <ul id="archive-index"></ul>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>email@email.email.com<br>instagram: Blabla</p>
+  </footer>
+
+  <script src="photos.js"></script>
+  <script>
+    // Costruisce l'indice leggendo photos.js — niente da toccare qui
+    const ul = document.getElementById('archive-index');
+    ARCHIVIO.forEach(coll => {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      // le collezioni con layout "scroll" aprono la pagina scorrevole
+      const pagina = coll.layout === 'scroll' ? 'scroll.html' : 'archivio.html';
+      a.href = pagina + '?c=' + encodeURIComponent(coll.id);
+      a.textContent = coll.titolo;
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+  </script>
+</body>
+</html>
