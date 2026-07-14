@@ -183,6 +183,18 @@ main {
 
 .home-slideshow.is-fullscreen .ss-controls {
   display: block;
+  opacity: 1;
+  transition: opacity 0.35s;
+}
+
+/* dopo qualche secondo di inattività: bottoni e cursore svaniscono */
+.home-slideshow.is-fullscreen.controls-hidden .ss-controls {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.home-slideshow.is-fullscreen.controls-hidden {
+  cursor: none;
 }
 
 .ss-controls button {
@@ -211,9 +223,8 @@ main {
 }
 
 #ss-pause {
-  bottom: 25px;
-  left: 50%;
-  transform: translateX(-50%);
+  bottom: 20px;
+  left: 20px;
 }
 
 #ss-exit {

@@ -19,7 +19,7 @@
       <img id="slideshow" src="" alt="">
       <button class="ss-open" id="ss-full">[fullscreen]</button>
       <div class="ss-controls">
-        <button id="ss-pause">[PAUSE]</button>
+        <button id="ss-pause">&#10074;&#10074;</button>
         <button id="ss-exit">[x]</button>
       </div>
     </div>
@@ -44,11 +44,13 @@
 
     const img = document.getElementById('slideshow');
     const wrap = document.getElementById('ss-wrap');
+    const controlli = document.querySelector('.ss-controls');
     const btnFull = document.getElementById('ss-full');
     const btnPause = document.getElementById('ss-pause');
     const btnExit = document.getElementById('ss-exit');
 
-    const INTERVALLO = 10000; // millisecondi tra una foto e l'altra
+    const INTERVALLO = 10000;        // ms tra una foto e l'altra
+    const RITARDO_SCOMPARSA = 3000;  // ms prima che i bottoni svaniscano
 
     let indice = 0;
     let timer = null;
@@ -72,20 +74,19 @@
     }
 
     // ---- timer: avvio / pausa ----
-    // Il bottone mostra sempre l'AZIONE del prossimo click,
-    // come il bottone audio di vgproject:
-    // [PAUSE] visibile = slideshow in corso, [PLAY] = fermo
+    // Il bottone mostra sempre l'AZIONE del prossimo click:
+    // ❚❚ visibile = slideshow in corso, ▶ = fermo
     function avvia() {
       clearInterval(timer);
       timer = setInterval(() => mostra(indice + 1), INTERVALLO);
       inPausa = false;
-      btnPause.textContent = '[PAUSE]';
+      btnPause.textContent = '\u275A\u275A'; // ❚❚
     }
     function pausa() {
       clearInterval(timer);
       timer = null;
       inPausa = true;
-      btnPause.textContent = '[PLAY]';
+      btnPause.textContent = '\u25B6'; // ▶
     }
     function togglePausa() {
       if (inPausa) { avvia(); } else { pausa(); }
@@ -113,9 +114,38 @@
       btnFull.style.display = 'none';
     }
 
+    // ---- scomparsa automatica dei controlli ----
+    // I bottoni svaniscono dopo qualche secondo di inattività
+    // e ricompaiono muovendo il mouse (o toccando la tastiera).
+    let timerControlli = null;
+    let mouseSuiControlli = false;
+
+    function svegliaControlli() {
+      if (!fullscreenAttivo()) return;
+      wrap.classList.remove('controls-hidden');
+      clearTimeout(timerControlli);
+      timerControlli = setTimeout(() => {
+        // non nascondere se il mouse è fermo SOPRA un bottone
+        if (fullscreenAttivo() && !mouseSuiControlli) {
+          wrap.classList.add('controls-hidden');
+        }
+      }, RITARDO_SCOMPARSA);
+    }
+
+    wrap.addEventListener('mousemove', svegliaControlli);
+    controlli.addEventListener('mouseenter', () => { mouseSuiControlli = true; });
+    controlli.addEventListener('mouseleave', () => { mouseSuiControlli = false; svegliaControlli(); });
+
     function suCambioFullscreen() {
-      wrap.classList.toggle('is-fullscreen', !!fullscreenAttivo());
-      if (!fullscreenAttivo()) avvia(); // uscendo, il timer riparte sempre
+      const fs = !!fullscreenAttivo();
+      wrap.classList.toggle('is-fullscreen', fs);
+      if (fs) {
+        svegliaControlli();       // entrando: bottoni visibili, poi countdown
+      } else {
+        clearTimeout(timerControlli);
+        wrap.classList.remove('controls-hidden');
+        avvia();                  // uscendo, il timer riparte sempre
+      }
     }
     document.addEventListener('fullscreenchange', suCambioFullscreen);
     document.addEventListener('webkitfullscreenchange', suCambioFullscreen);
@@ -124,6 +154,7 @@
     // SPAZIO = pausa/riprendi — FRECCE = foto avanti/indietro
     document.addEventListener('keydown', (e) => {
       if (!fullscreenAttivo()) return;
+      svegliaControlli();
       if (e.key === ' ') { e.preventDefault(); togglePausa(); }
       if (e.key === 'ArrowRight') { mostra(indice + 1); if (!inPausa) avvia(); }
       if (e.key === 'ArrowLeft')  { mostra(indice - 1); if (!inPausa) avvia(); }
