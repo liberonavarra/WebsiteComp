@@ -15,8 +15,13 @@
   </header>
 
   <main>
-    <div class="home-slideshow">
+    <div class="home-slideshow" id="ss-wrap">
       <img id="slideshow" src="" alt="">
+      <button class="ss-open" id="ss-full">[fullscreen]</button>
+      <div class="ss-controls">
+        <button id="ss-pause">[PAUSE]</button>
+        <button id="ss-exit">[x]</button>
+      </div>
     </div>
   </main>
 
@@ -26,8 +31,9 @@
 
   <script src="photos.js"></script>
   <script>
-    // Slideshow automatico: pesca da TUTTO l'archivio (photos.js),
-    // in ordine casuale diverso a ogni caricamento della pagina.
+    // ================= SLIDESHOW =================
+    // Pesca da TUTTO l'archivio (photos.js), in ordine
+    // casuale diverso a ogni caricamento della pagina.
     const tutte = [...new Set(ARCHIVIO.flatMap(c => c.foto))];
 
     // mescola (Fisher-Yates)
@@ -37,27 +43,96 @@
     }
 
     const img = document.getElementById('slideshow');
-    let indice = 0;
-    img.src = tutte[0];
+    const wrap = document.getElementById('ss-wrap');
+    const btnFull = document.getElementById('ss-full');
+    const btnPause = document.getElementById('ss-pause');
+    const btnExit = document.getElementById('ss-exit');
 
-    // precarica la prossima per evitare "flash" bianchi
+    const INTERVALLO = 10000; // millisecondi tra una foto e l'altra
+
+    let indice = 0;
+    let timer = null;
+    let inPausa = false;
+
     function precarica(n) {
       const p = new Image();
       p.src = tutte[n % tutte.length];
     }
-    precarica(1);
 
-    setInterval(() => {
-      indice = (indice + 1) % tutte.length;
-      // la nuova foto viene mostrata solo quando è completamente
-      // pronta: mai immagini che compaiono a metà
+    // mostra la foto n solo quando è completamente pronta:
+    // mai immagini che compaiono a metà
+    function mostra(n) {
+      indice = (n + tutte.length) % tutte.length;
       const nuova = new Image();
       nuova.src = tutte[indice];
       nuova.decode()
         .then(() => { img.src = nuova.src; })
         .catch(() => { img.src = nuova.src; });
       precarica(indice + 1);
-    }, 8000); // cambia foto ogni 8 secondi
+    }
+
+    // ---- timer: avvio / pausa ----
+    // Il bottone mostra sempre l'AZIONE del prossimo click,
+    // come il bottone audio di vgproject:
+    // [PAUSE] visibile = slideshow in corso, [PLAY] = fermo
+    function avvia() {
+      clearInterval(timer);
+      timer = setInterval(() => mostra(indice + 1), INTERVALLO);
+      inPausa = false;
+      btnPause.textContent = '[PAUSE]';
+    }
+    function pausa() {
+      clearInterval(timer);
+      timer = null;
+      inPausa = true;
+      btnPause.textContent = '[PLAY]';
+    }
+    function togglePausa() {
+      if (inPausa) { avvia(); } else { pausa(); }
+    }
+
+    // ---- schermo intero ----
+    function entraFullscreen() {
+      if (wrap.requestFullscreen) wrap.requestFullscreen();
+      else if (wrap.webkitRequestFullscreen) wrap.webkitRequestFullscreen();
+    }
+    function esciFullscreen() {
+      if (document.exitFullscreen) document.exitFullscreen();
+      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+    function fullscreenAttivo() {
+      return document.fullscreenElement || document.webkitFullscreenElement;
+    }
+
+    btnFull.addEventListener('click', entraFullscreen);
+    btnExit.addEventListener('click', esciFullscreen);
+    btnPause.addEventListener('click', togglePausa);
+
+    // se il browser non supporta lo schermo intero, il bottone sparisce
+    if (!wrap.requestFullscreen && !wrap.webkitRequestFullscreen) {
+      btnFull.style.display = 'none';
+    }
+
+    function suCambioFullscreen() {
+      wrap.classList.toggle('is-fullscreen', !!fullscreenAttivo());
+      if (!fullscreenAttivo()) avvia(); // uscendo, il timer riparte sempre
+    }
+    document.addEventListener('fullscreenchange', suCambioFullscreen);
+    document.addEventListener('webkitfullscreenchange', suCambioFullscreen);
+
+    // Tastiera, solo a schermo intero:
+    // SPAZIO = pausa/riprendi — FRECCE = foto avanti/indietro
+    document.addEventListener('keydown', (e) => {
+      if (!fullscreenAttivo()) return;
+      if (e.key === ' ') { e.preventDefault(); togglePausa(); }
+      if (e.key === 'ArrowRight') { mostra(indice + 1); if (!inPausa) avvia(); }
+      if (e.key === 'ArrowLeft')  { mostra(indice - 1); if (!inPausa) avvia(); }
+    });
+
+    // ---- via ----
+    img.src = tutte[0];
+    precarica(1);
+    avvia();
   </script>
 </body>
 </html>

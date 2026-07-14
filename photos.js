@@ -38,7 +38,7 @@ const ARCHIVIO = [
       "images/2021/2021-8.jpg",
       "images/2021/2021-9.jpg",
       "images/2021/2021-10.jpg",
-      "images/2021/2021-11.jpg",
+
       "images/2021/2021-12.jpg",
       "images/2021/2021-13.jpg",
       "images/2021/2021-14.jpg",
@@ -48,7 +48,7 @@ const ARCHIVIO = [
       "images/2021/2021-18.jpg",
       "images/2021/2021-19.jpg",
       "images/2021/2021-20.jpg",
-      "images/2021/2021-21.jpg",
+
       "images/2021/2021-22.jpg",
       "images/2021/2021-23.jpg",
     ]
