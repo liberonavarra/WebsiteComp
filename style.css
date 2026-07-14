@@ -260,6 +260,7 @@ footer a:hover {
   max-width: 100%;
   height: auto;
   display: block;
+  cursor: pointer; /* cliccabili: aprono il visualizzatore a schermo intero */
 }
 
 /* =========================================
@@ -269,6 +270,10 @@ footer a:hover {
 .about {
   flex: 0 0 auto;
   max-width: 500px;
+}
+
+.about a {
+  color: black; /* i link (email, instagram...) restano neri, non blu */
 }
 
 /* =========================================

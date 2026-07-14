@@ -20,20 +20,12 @@
   <h2 class="archive-title" id="titolo"></h2>
   <div class="photo-grid" id="grid"></div>
 
-  <!-- Lightbox: si apre cliccando una foto -->
-  <div class="lightbox" id="lightbox">
-    <button class="lb-close">[x]</button>
-    <button class="lb-prev">&#9664;</button>
-    <img id="lb-img" src="" alt="">
-    <button class="lb-next">&#9654;</button>
-    <div class="lb-counter" id="lb-counter"></div>
-  </div>
-
   <footer>
     <p>email@email.email.com<br>instagram: Blabla</p>
   </footer>
 
   <script src="photos.js"></script>
+  <script src="lightbox.js"></script>
   <script>
     // Legge quale collezione mostrare dall'indirizzo (?c=...)
     const params = new URLSearchParams(window.location.search);
@@ -53,60 +45,19 @@
     } else {
       document.getElementById('titolo').textContent = coll.titolo;
 
+      // visualizzatore a schermo intero (condiviso, vedi lightbox.js)
+      const lightbox = creaLightbox(coll.foto);
+
       // Costruisce la griglia
       coll.foto.forEach((src, i) => {
         const img = document.createElement('img');
         img.src = src;
         img.loading = 'lazy'; // carica le foto solo quando servono
         img.alt = coll.titolo + ' — foto ' + (i + 1);
-        img.addEventListener('click', () => openLightbox(i));
+        img.addEventListener('click', () => lightbox.apri(i));
         grid.appendChild(img);
       });
     }
-
-    // ----- Lightbox -----
-    const lb = document.getElementById('lightbox');
-    const lbImg = document.getElementById('lb-img');
-    const lbCounter = document.getElementById('lb-counter');
-    let lbIndex = 0;
-
-    function openLightbox(i) {
-      lbIndex = i;
-      updateLightbox();
-      lb.classList.add('open');
-    }
-    function closeLightbox() {
-      lb.classList.remove('open');
-    }
-    function updateLightbox() {
-      lbImg.src = coll.foto[lbIndex];
-      lbCounter.textContent = (lbIndex + 1) + ' / ' + coll.foto.length;
-    }
-    function lbPrev() {
-      lbIndex = (lbIndex - 1 + coll.foto.length) % coll.foto.length;
-      updateLightbox();
-    }
-    function lbNext() {
-      lbIndex = (lbIndex + 1) % coll.foto.length;
-      updateLightbox();
-    }
-
-    document.querySelector('.lb-prev').addEventListener('click', lbPrev);
-    document.querySelector('.lb-next').addEventListener('click', lbNext);
-    document.querySelector('.lb-close').addEventListener('click', closeLightbox);
-
-    // Click sullo sfondo nero = chiudi
-    lb.addEventListener('click', (e) => {
-      if (e.target === lb) closeLightbox();
-    });
-
-    // Tastiera: frecce per navigare, ESC per chiudere
-    document.addEventListener('keydown', (e) => {
-      if (!lb.classList.contains('open')) return;
-      if (e.key === 'Escape') closeLightbox();
-      if (e.key === 'ArrowLeft') lbPrev();
-      if (e.key === 'ArrowRight') lbNext();
-    });
   </script>
 </body>
 </html>

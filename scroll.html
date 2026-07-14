@@ -25,6 +25,7 @@
   </footer>
 
   <script src="photos.js"></script>
+  <script src="lightbox.js"></script>
   <script>
     // Legge quale collezione mostrare dall'indirizzo (?c=...)
     const params = new URLSearchParams(window.location.search);
@@ -33,6 +34,9 @@
     document.title = coll.titolo + ' - Blabla';
     document.getElementById('titolo').textContent = coll.titolo;
 
+    // visualizzatore a schermo intero (condiviso, vedi lightbox.js)
+    const lightbox = creaLightbox(coll.foto);
+
     // Impila le foto in colonna, a proporzioni naturali
     const colonna = document.getElementById('colonna');
     coll.foto.forEach((src, i) => {
@@ -40,6 +44,7 @@
       img.src = src;
       img.loading = 'lazy';
       img.alt = coll.titolo + ' — ' + (i + 1);
+      img.addEventListener('click', () => lightbox.apri(i));
       colonna.appendChild(img);
     });
   </script>
