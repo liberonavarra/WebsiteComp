@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Blabla</title>
+  <title>liberonavarra.github</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -20,9 +20,6 @@
   <h2 class="archive-title" id="titolo"></h2>
   <div class="scroll-page" id="colonna"></div>
 
-  <footer>
-    <p>email@email.email.com<br>instagram: Blabla</p>
-  </footer>
 
   <script src="photos.js"></script>
   <script src="lightbox.js"></script>
@@ -31,7 +28,7 @@
     const params = new URLSearchParams(window.location.search);
     const coll = ARCHIVIO.find(c => c.id === params.get('c')) || ARCHIVIO[0];
 
-    document.title = coll.titolo + ' - Blabla';
+    document.title = coll.titolo + ' - liberonavarra.github';
     document.getElementById('titolo').textContent = coll.titolo;
 
     // visualizzatore a schermo intero (condiviso, vedi lightbox.js)
