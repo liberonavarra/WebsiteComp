@@ -94,7 +94,6 @@ const ARCHIVIO = [
       "images/2024/2024-5.jpg",
       "images/2024/2024-6.jpg",
       "images/2024/2024-7.jpg",
-      "images/2024/2024-8.jpg",
       "images/2024/2024-9.jpg",
     ]
   },
